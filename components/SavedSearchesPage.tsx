@@ -44,7 +44,7 @@ const EditSearchModal: React.FC<EditSearchModalProps> = ({ search, onClose, onSa
 
     return (
          <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex justify-center items-start p-4 animate-fade-in overflow-y-auto">
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-2xl my-8">
+            <div className="rounded-lg shadow-xl w-full max-w-2xl my-8 ui-element-depth">
                 <div className="flex justify-between items-center p-5 border-b border-gray-200 dark:border-gray-700">
                     <h3 className="text-xl font-heading font-bold text-gray-800 dark:text-gray-100">Uredi shranjeno iskanje</h3>
                     <button onClick={onClose} className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700" aria-label="Zapri modal"><CloseIcon /></button>
@@ -52,49 +52,49 @@ const EditSearchModal: React.FC<EditSearchModalProps> = ({ search, onClose, onSa
                 <div className="p-6 space-y-6">
                      <div>
                         <label htmlFor="searchName" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Ime iskanja</label>
-                        <input id="searchName" type="text" value={editedSearch.name} onChange={handleNameChange} className="w-full h-[42px] text-base px-4 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded text-gray-900 dark:text-gray-100 focus:ring-brand focus:border-brand" />
+                        <input id="searchName" type="text" value={editedSearch.name} onChange={handleNameChange} className="w-full h-[42px] text-base px-4 rounded input-depth text-gray-900 dark:text-gray-100" />
                     </div>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
                             <label htmlFor="keyword" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Ključna beseda</label>
-                            <input type="text" name="keyword" id="keyword" value={filters.keyword} onChange={handleInputChange} className="w-full h-[42px] text-base px-4 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded text-gray-900 dark:text-gray-100 focus:ring-brand focus:border-brand" />
+                            <input type="text" name="keyword" id="keyword" value={filters.keyword} onChange={handleInputChange} className="w-full h-[42px] text-base px-4 rounded input-depth text-gray-900 dark:text-gray-100" />
                         </div>
                         <div>
                             <label htmlFor="fundingType" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Tip financiranja</label>
-                            <select name="fundingType" id="fundingType" value={filters.fundingType} onChange={handleInputChange} className="w-full h-[42px] text-base pr-4 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded text-gray-900 dark:text-gray-100 focus:ring-brand focus:border-brand">
+                            <select name="fundingType" id="fundingType" value={filters.fundingType} onChange={handleInputChange} className="w-full h-[42px] text-base pr-4 rounded input-depth text-gray-900 dark:text-gray-100">
                                 {fundingTypes.map(type => <option key={type} value={type}>{type === 'all' ? 'Vse vrste' : type}</option>)}
                             </select>
                         </div>
                         <div>
                             <label htmlFor="category" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Kategorija</label>
-                            <select name="category" id="category" value={filters.category} onChange={handleInputChange} className="w-full h-[42px] text-base pr-4 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded text-gray-900 dark:text-gray-100 focus:ring-brand focus:border-brand">
+                            <select name="category" id="category" value={filters.category} onChange={handleInputChange} className="w-full h-[42px] text-base pr-4 rounded input-depth text-gray-900 dark:text-gray-100">
                                 {categories.map(cat => <option key={cat} value={cat}>{cat === 'all' ? 'Vse kategorije' : cat}</option>)}
                             </select>
                         </div>
                         <div>
                             <label htmlFor="institution" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Institucija</label>
-                            <select name="institution" id="institution" value={filters.institution} onChange={handleInputChange} className="w-full h-[42px] text-base pr-4 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded text-gray-900 dark:text-gray-100 focus:ring-brand focus:border-brand">
+                            <select name="institution" id="institution" value={filters.institution} onChange={handleInputChange} className="w-full h-[42px] text-base pr-4 rounded input-depth text-gray-900 dark:text-gray-100">
                                 {institutions.map(inst => <option key={inst} value={inst}>{inst === 'all' ? 'Vse institucije' : inst}</option>)}
                             </select>
                         </div>
                         <div>
                             <label htmlFor="eligibleEntity" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Upravičeni prijavitelj</label>
-                            <select name="eligibleEntity" id="eligibleEntity" value={filters.eligibleEntity} onChange={handleInputChange} className="w-full h-[42px] text-base pr-4 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded text-gray-900 dark:text-gray-100 focus:ring-brand focus:border-brand">
+                            <select name="eligibleEntity" id="eligibleEntity" value={filters.eligibleEntity} onChange={handleInputChange} className="w-full h-[42px] text-base pr-4 rounded input-depth text-gray-900 dark:text-gray-100">
                                 {eligibleEntities.map(entity => <option key={entity} value={entity}>{entity === 'all' ? 'Vsi tipi' : entity}</option>)}
                             </select>
                         </div>
                          <div>
                             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Rok prijave</label>
                             <div className="grid grid-cols-2 gap-2">
-                                <input type="date" name="deadlineStart" value={filters.deadlineStart} onChange={handleInputChange} className="w-full h-[42px] text-base px-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded text-gray-900 dark:text-gray-100 focus:ring-brand focus:border-brand" />
-                                <input type="date" name="deadlineEnd" value={filters.deadlineEnd} onChange={handleInputChange} className="w-full h-[42px] text-base px-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded text-gray-900 dark:text-gray-100 focus:ring-brand focus:border-brand" />
+                                <input type="date" name="deadlineStart" value={filters.deadlineStart} onChange={handleInputChange} className="w-full h-[42px] text-base px-2 rounded input-depth text-gray-900 dark:text-gray-100" />
+                                <input type="date" name="deadlineEnd" value={filters.deadlineEnd} onChange={handleInputChange} className="w-full h-[42px] text-base px-2 rounded input-depth text-gray-900 dark:text-gray-100" />
                             </div>
                         </div>
                     </div>
                 </div>
                  <div className="flex justify-end items-center p-5 bg-gray-50 dark:bg-gray-800/50 border-t border-gray-200 dark:border-gray-700 rounded-b-lg space-x-3">
-                    <button onClick={onClose} className="h-[42px] px-4 py-2 rounded border border-gray-300 dark:border-gray-600">Prekliči</button>
-                    <button onClick={handleSave} className="h-[42px] bg-brand text-white font-bold px-6 py-2 rounded hover:bg-brand-dark flex items-center gap-2"><SaveIcon /> Shrani spremembe</button>
+                    <button onClick={onClose} className="h-[42px] px-4 py-2 rounded btn-secondary font-semibold">Prekliči</button>
+                    <button onClick={handleSave} className="h-[42px] text-white font-bold px-6 py-2 rounded flex items-center gap-2 btn-primary"><SaveIcon /> Shrani spremembe</button>
                 </div>
             </div>
         </div>
@@ -191,7 +191,7 @@ const SavedSearchesPage: React.FC<SavedSearchesPageProps> = ({ allTenders, saved
 
     return (
         <>
-            <div className="bg-white dark:bg-gray-800 rounded-md shadow border border-gray-200 dark:border-gray-700">
+            <div className="ui-element-depth rounded-md">
                 <div className="p-4 sm:p-6 border-b border-gray-200 dark:border-gray-700">
                     <h2 className="text-2xl md:text-3xl font-heading font-bold text-gray-800 dark:text-gray-100">Shranjena iskanja ({savedSearches.length})</h2>
                     <p className="mt-1 text-base text-gray-600 dark:text-gray-400">Upravljajte s shranjenimi filtri in nastavite obvestila za nove priložnosti.</p>
@@ -199,7 +199,7 @@ const SavedSearchesPage: React.FC<SavedSearchesPageProps> = ({ allTenders, saved
                 <div className="p-4 sm:p-6 space-y-4">
                     {savedSearches.length > 0 ? (
                         savedSearches.map(search => (
-                            <div key={search.id} className="bg-gray-50 dark:bg-gray-700/50 p-4 rounded-lg border border-gray-200 dark:border-gray-600">
+                            <div key={search.id} className="p-4 rounded-lg ui-element-depth">
                                 <div className="flex flex-col sm:flex-row justify-between sm:items-start gap-3">
                                     <div className="flex-grow">
                                         {editingSearchId === search.id ? (
@@ -209,7 +209,7 @@ const SavedSearchesPage: React.FC<SavedSearchesPageProps> = ({ allTenders, saved
                                                 onChange={(e) => setEditingName(e.target.value)}
                                                 onBlur={() => handleNameSave(search.id)}
                                                 onKeyDown={(e) => e.key === 'Enter' && handleNameSave(search.id)}
-                                                className="w-full sm:w-auto text-lg font-semibold bg-white dark:bg-gray-700 border border-brand rounded px-2 py-1"
+                                                className="w-full sm:w-auto text-lg font-semibold rounded px-2 py-1 input-depth"
                                                 autoFocus
                                             />
                                         ) : (

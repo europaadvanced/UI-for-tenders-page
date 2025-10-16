@@ -1,4 +1,3 @@
-
 export interface Tender {
   id: number;
   title: string;
@@ -14,6 +13,11 @@ export interface Tender {
   conclusionPoints: string[];
 }
 
+export interface SavedTender {
+  id: number;
+  nickname: string;
+}
+
 export type FundingType = 'Nepovratna sredstva' | 'Subvencija' | 'So-investicija' | 'Vračljiva pomoč' | 'Subvencioniran kredit';
 export type Category = 'Tehnologija in inovacije' | 'Zeleni prehod' | 'Kmetijstvo' | 'Turizem' | 'Digitalizacija' | 'Socialno podjetništvo';
 
@@ -27,7 +31,8 @@ export interface FilterState {
   deadlineEnd: string;
   minFunding: number;
   maxFunding: number;
-  showSaved: boolean; // Note: this is now managed by view, not filters
+  showSaved: boolean; 
+  showUninteresting: boolean;
 }
 
 export interface SummaryData {
@@ -45,6 +50,7 @@ export interface NotificationSettings {
   enabled: boolean;
   frequency: 'weekly' | 'monthly';
   includeTips: boolean;
+  email: string;
 }
 
 export interface SavedSearch {
@@ -60,4 +66,7 @@ export interface ProfileData {
   companySize: string;
   mainGoals: string;
   projectDescription: string;
+  companyWebsite: string;
+  fundingExperience: string;
+  keyTechnologies: string;
 }

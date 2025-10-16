@@ -1,26 +1,30 @@
-
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
-import { Tender, FilterState, SavedSearch, ProfileData } from './types';
+import { Tender, FilterState, SavedSearch, ProfileData, SavedTender } from './types';
 import { fetchTenders } from './services/geminiService';
 import { useLocalStorage } from './hooks/useLocalStorage';
 import Sidebar from './components/Sidebar';
 import TenderSearchPage from './components/TenderSearchPage';
 import SavedTendersPage from './components/SavedTendersPage';
+import UninterestingTendersPage from './components/UninterestingTendersPage';
 import SavedSearchesPage from './components/SavedSearchesPage';
 import AiChatPage from './components/AiChatPage';
 import ProfilePage from './components/ProfilePage';
 import Footer from './components/Footer';
 
-export type AppView = 'search' | 'saved-tenders' | 'ai-chat' | 'saved-searches' | 'profile';
+export type AppView = 'search' | 'saved-tenders' | 'uninteresting-tenders' | 'ai-chat' | 'saved-searches' | 'profile';
 
 const App: React.FC = () => {
     const [allTenders, setAllTenders] = useState<Tender[]>([]);
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
-    const [savedTenderIds, setSavedTenderIds] = useLocalStorage<number[]>('savedTenders', []);
+
+    const [savedTenders, setSavedTenders] = useLocalStorage<SavedTender[]>('savedTenders', []);
+    const [uninterestingTenderIds, setUninterestingTenderIds] = useLocalStorage<number[]>('uninterestingTenderIds', []);
     const [savedSearches, setSavedSearches] = useLocalStorage<SavedSearch[]>('savedSearches', []);
+    
     const [profile, setProfile] = useLocalStorage<ProfileData>('userProfile', {
-        companyName: '', industry: '', companySize: '', mainGoals: '', projectDescription: ''
+        companyName: '', industry: '', companySize: '', mainGoals: '', projectDescription: '',
+        companyWebsite: '', fundingExperience: '', keyTechnologies: ''
     });
 
     const [currentView, setCurrentView] = useState<AppView>('search');
@@ -32,12 +36,12 @@ const App: React.FC = () => {
         filters: {
             keyword: '', fundingType: 'all', category: 'all', institution: 'all',
             eligibleEntity: 'all', deadlineStart: '', deadlineEnd: '',
-            minFunding: 0, maxFunding: 0, showSaved: false,
+            minFunding: 0, maxFunding: 0, showSaved: false, showUninteresting: true,
         },
         activeFilters: {
             keyword: '', fundingType: 'all', category: 'all', institution: 'all',
             eligibleEntity: 'all', deadlineStart: '', deadlineEnd: '',
-            minFunding: 0, maxFunding: 0, showSaved: false,
+            minFunding: 0, maxFunding: 0, showSaved: false, showUninteresting: true,
         },
         sortConfig: { key: 'deadline', direction: 'asc' },
         currentPage: 1,
@@ -50,7 +54,6 @@ const App: React.FC = () => {
         document.documentElement.classList.toggle('dark', theme === 'dark');
     }, [theme]);
 
-    // Load tenders on mount
     useEffect(() => {
         const loadTenders = async () => {
             try {
@@ -68,7 +71,6 @@ const App: React.FC = () => {
         loadTenders();
     }, []);
     
-    // Check for URL params to load a saved search
     useEffect(() => {
       const urlParams = new URLSearchParams(window.location.search);
       const searchId = urlParams.get('searchId');
@@ -82,20 +84,41 @@ const App: React.FC = () => {
             currentPage: 1,
           }));
           setCurrentView('search');
-          // Clean the URL
           window.history.replaceState({}, document.title, window.location.pathname);
         }
       }
     }, [savedSearches, setSearchPageState]);
 
-
     const handleSaveTender = useCallback((id: number) => {
-        setSavedTenderIds(prev => prev.includes(id) ? prev.filter(savedId => savedId !== id) : [...prev, id]);
-    }, [setSavedTenderIds]);
+        setSavedTenders(prev => {
+            const isSaved = prev.some(t => t.id === id);
+            if (isSaved) {
+                return prev.filter(t => t.id !== id);
+            } else {
+                setUninterestingTenderIds(ids => ids.filter(uninterestingId => uninterestingId !== id));
+                return [...prev, { id, nickname: '' }];
+            }
+        });
+    }, [setSavedTenders, setUninterestingTenderIds]);
+    
+    const handleUpdateNickname = useCallback((id: number, nickname: string) => {
+        setSavedTenders(prev => prev.map(t => t.id === id ? { ...t, nickname } : t));
+    }, [setSavedTenders]);
+    
+    const handleMarkUninteresting = useCallback((id: number) => {
+        setUninterestingTenderIds(prev => {
+            if (prev.includes(id)) {
+                return prev.filter(uninterestingId => uninterestingId !== id);
+            } else {
+                setSavedTenders(saved => saved.filter(t => t.id !== id));
+                return [...prev, id];
+            }
+        });
+    }, [setUninterestingTenderIds, setSavedTenders]);
     
     const renderContent = () => {
         if (isLoading) {
-            return <div className="text-center py-20 text-lg">Nalaganje razpisov...</div>
+            return <div className="text-center py-20 text-lg text-slate-600 dark:text-slate-400">Nalaganje razpisov...</div>
         }
         if (error) {
             return <div className="text-center py-20 text-red-500 text-lg">{error}</div>
@@ -105,8 +128,11 @@ const App: React.FC = () => {
             case 'search':
                 return <TenderSearchPage
                     allTenders={allTenders}
-                    savedTenderIds={savedTenderIds}
+                    savedTenders={savedTenders}
+                    uninterestingTenderIds={uninterestingTenderIds}
                     onSaveTender={handleSaveTender}
+                    onMarkUninteresting={handleMarkUninteresting}
+                    onUpdateNickname={handleUpdateNickname}
                     savedSearches={savedSearches}
                     setSavedSearches={setSavedSearches}
                     pageState={searchPageState}
@@ -115,8 +141,20 @@ const App: React.FC = () => {
             case 'saved-tenders':
                 return <SavedTendersPage
                     allTenders={allTenders}
-                    savedTenderIds={savedTenderIds}
+                    savedTenders={savedTenders}
                     onSaveTender={handleSaveTender}
+                    onMarkUninteresting={handleMarkUninteresting}
+                    onUpdateNickname={handleUpdateNickname}
+                    uninterestingTenderIds={uninterestingTenderIds}
+                />;
+            case 'uninteresting-tenders':
+                 return <UninterestingTendersPage
+                    allTenders={allTenders}
+                    uninterestingTenderIds={uninterestingTenderIds}
+                    onMarkUninteresting={handleMarkUninteresting}
+                    savedTenders={savedTenders}
+                    onSaveTender={handleSaveTender}
+                    onUpdateNickname={handleUpdateNickname}
                 />;
             case 'saved-searches':
                 return <SavedSearchesPage
@@ -125,24 +163,20 @@ const App: React.FC = () => {
                     setSavedSearches={setSavedSearches}
                 />;
             case 'ai-chat':
-                return <AiChatPage profile={profile} />;
+                return <AiChatPage 
+                            profile={profile} 
+                            allTenders={allTenders}
+                            savedTenders={savedTenders}
+                       />;
             case 'profile':
                 return <ProfilePage profile={profile} onSave={setProfile} />;
             default:
-                return <TenderSearchPage
-                    allTenders={allTenders}
-                    savedTenderIds={savedTenderIds}
-                    onSaveTender={handleSaveTender}
-                    savedSearches={savedSearches}
-                    setSavedSearches={setSavedSearches}
-                    pageState={searchPageState}
-                    setPageState={setSearchPageState}
-                />;
+                return <div />;
         }
     };
 
     return (
-        <div className="min-h-screen text-gray-800 dark:text-gray-200 bg-gray-100 dark:bg-gray-900 font-sans">
+        <div className="min-h-screen font-sans bg-slate-50 dark:bg-slate-900">
             <Sidebar currentView={currentView} onViewChange={setCurrentView} />
             <div className="lg:pl-64 flex flex-col min-h-screen">
                 <main className="flex-grow p-4 md:p-6 lg:p-8">

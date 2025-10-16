@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { SortKey, SortDirection } from '../types';
 
@@ -10,7 +11,7 @@ const sortOptions: { label: string; key: SortKey; direction: SortDirection }[] =
     { label: 'Rok prijave (najstarejši)', key: 'deadline', direction: 'asc' },
     { label: 'Rok prijave (najnovejši)', key: 'deadline', direction: 'desc' },
     { label: 'Višina sredstev (najnižja)', key: 'fundingMax', direction: 'asc' },
-    { label: 'Višina sredstev (najvišja)', key: 'fundingMax', direction: 'desc' },
+    { label: 'Višina sredstev (najvižja)', key: 'fundingMax', direction: 'desc' },
 ];
 
 const SortBar: React.FC<SortBarProps> = ({ sortConfig, onSortChange }) => {
@@ -23,14 +24,14 @@ const SortBar: React.FC<SortBarProps> = ({ sortConfig, onSortChange }) => {
 
   return (
     <div className="flex justify-end items-center">
-      <label htmlFor="sort-select" className="text-sm font-medium text-gray-600 dark:text-gray-300 mr-2">
+      <label htmlFor="sort-select" className="text-sm font-medium text-slate-600 dark:text-slate-400 mr-2">
         Razvrsti po:
       </label>
       <select
         id="sort-select"
         value={currentValue}
         onChange={handleChange}
-        className="h-[42px] text-base bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded text-gray-900 dark:text-gray-100 focus:ring-brand focus:border-brand"
+        className="h-[42px] text-base rounded-md input-depth"
       >
         {sortOptions.map((option) => (
           <option key={`${option.key}-${option.direction}`} value={`${option.key}-${option.direction}`}>

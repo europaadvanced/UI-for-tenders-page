@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { SavedSearch, NotificationSettings } from '../types';
 import { CloseIcon, SaveIcon } from './Icons';
@@ -23,6 +22,11 @@ const NotificationSettingsModal: React.FC<NotificationSettingsModalProps> = ({ s
     const handleToggle = (key: keyof NotificationSettings) => {
         setSettings(prev => ({...prev, [key]: !prev[key]}));
     }
+    
+    const handleSettingChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+        const { name, value } = e.target;
+        setSettings(prev => ({ ...prev, [name]: value }));
+    };
 
     return (
         <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex justify-center items-center p-4 animate-fade-in">
@@ -52,6 +56,18 @@ const NotificationSettingsModal: React.FC<NotificationSettingsModalProps> = ({ s
 
                     <div className={`space-y-4 transition-opacity duration-300 ${settings.enabled ? 'opacity-100' : 'opacity-50 pointer-events-none'}`}>
                         <div>
+                            <label htmlFor="email" className="font-semibold text-gray-700 dark:text-gray-300 mb-2 block">Email za obvestila</label>
+                            <input
+                                type="email"
+                                id="email"
+                                name="email"
+                                value={settings.email}
+                                onChange={handleSettingChange}
+                                placeholder="vnesite.vas@email.com"
+                                className="w-full h-11 text-base px-4 rounded-md input-depth"
+                            />
+                        </div>
+                        <div>
                             <label className="font-semibold text-gray-700 dark:text-gray-300 mb-2 block">Pogostost</label>
                             <div className="flex gap-4">
                                 <button
@@ -78,8 +94,8 @@ const NotificationSettingsModal: React.FC<NotificationSettingsModalProps> = ({ s
 
                 </div>
                 <div className="flex justify-end items-center p-5 bg-gray-50 dark:bg-gray-800/50 border-t border-gray-200 dark:border-gray-700 rounded-b-lg space-x-3">
-                    <button onClick={onClose} className="h-[42px] px-4 py-2 rounded border border-gray-300 dark:border-gray-600">Prekliči</button>
-                    <button onClick={handleSave} className="h-[42px] bg-brand text-white font-bold px-6 py-2 rounded hover:bg-brand-dark flex items-center gap-2"><SaveIcon /> Shrani</button>
+                    <button onClick={onClose} className="h-[42px] px-4 py-2 rounded btn-secondary">Prekliči</button>
+                    <button onClick={handleSave} className="h-[42px] text-white font-bold px-6 py-2 rounded flex items-center gap-2 btn-primary"><SaveIcon /> Shrani</button>
                 </div>
             </div>
         </div>

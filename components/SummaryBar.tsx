@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { SummaryData } from '../types';
 import { ClipboardListIcon, CashIcon, CalendarIcon } from './Icons';
@@ -17,13 +18,13 @@ const formatCurrencyShort = (value: number) => {
 };
 
 const SummaryItem: React.FC<{ icon: React.ReactNode; label: string; value: string | number | null; valueClassName?: string;}> = ({ icon, label, value, valueClassName = "text-base" }) => (
-    <div className="bg-gray-50 dark:bg-gray-700/50 p-2 rounded-md flex items-center gap-3">
-        <div className="bg-brand/10 p-2 rounded-full flex-shrink-0">
+    <div className="bg-white dark:bg-slate-800/50 p-3 rounded-lg flex items-center gap-4 border border-slate-200 dark:border-slate-700/50">
+        <div className="bg-brand/10 dark:bg-brand/20 p-2 rounded-full flex-shrink-0">
             {icon}
         </div>
         <div>
-            <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400">{label}</p>
-            <p className={`font-bold text-gray-800 dark:text-gray-100 leading-tight ${valueClassName}`}>{value ?? 'N/A'}</p>
+            <p className="text-sm text-slate-500 dark:text-slate-400">{label}</p>
+            <p className={`font-semibold text-slate-800 dark:text-slate-100 leading-tight ${valueClassName}`}>{value ?? 'N/A'}</p>
         </div>
     </div>
 );
@@ -46,19 +47,19 @@ const SummaryBar: React.FC<SummaryBarProps> = ({ data }) => {
                 icon={<ClipboardListIcon className="w-5 h-5 text-brand" />}
                 label="Najdenih razpisov" 
                 value={data.count} 
-                valueClassName="text-base"
+                valueClassName="text-lg"
             />
             <SummaryItem 
                 icon={<CashIcon className="w-5 h-5 text-brand" />}
                 label="Skupno financiranje" 
                 value={data.count > 0 ? `${formatCurrencyShort(data.totalMin)} - ${formatCurrencyShort(data.totalMax)}` : '€0'} 
-                valueClassName="text-sm"
+                valueClassName="text-base"
             />
             <SummaryItem 
                 icon={<CalendarIcon className="w-5 h-5 text-brand" />}
                 label="Obdobje rokov" 
                 value={dateValue}
-                valueClassName="text-sm"
+                valueClassName="text-base"
             />
         </div>
     );

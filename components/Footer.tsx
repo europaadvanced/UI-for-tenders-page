@@ -10,24 +10,24 @@ interface FooterProps {
 
 const Footer: React.FC<FooterProps> = ({ theme, onToggle }) => {
     return (
-        <footer className="bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700">
+        <footer className="bg-white dark:bg-slate-800 border-t border-slate-200 dark:border-slate-700">
             <div className="px-4 md:px-6 lg:px-8 py-8">
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center md:text-left">
                     {/* Column 1: Brand & Copyright */}
                     <div>
-                        <h2 className="text-2xl text-gray-900 dark:text-gray-100 flex items-center justify-center md:justify-start">
-                            <span className="font-serif font-bold">Tenders</span>
-                            <span className="font-serif font-thin italic text-brand">.AI</span>
+                        <h2 className="text-2xl text-slate-900 dark:text-slate-100 font-bold flex items-center justify-center md:justify-start">
+                            <span>tenders</span>
+                            <span className="font-light text-brand">.ai</span>
                         </h2>
-                        <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">
+                        <p className="text-sm text-slate-500 dark:text-slate-400 mt-2">
                             &copy; {new Date().getFullYear()} Tenders.AI. Vse pravice pridržane.
                         </p>
                     </div>
 
                     {/* Column 2: Contact Info */}
                     <div>
-                        <h3 className="font-semibold text-lg text-gray-800 dark:text-gray-200 mb-4 font-heading">Kontakt</h3>
-                        <ul className="space-y-2 text-gray-600 dark:text-gray-300">
+                        <h3 className="font-semibold text-lg text-slate-800 dark:text-slate-200 mb-4">Kontakt</h3>
+                        <ul className="space-y-2 text-slate-600 dark:text-slate-300">
                             <li className="flex items-center justify-center md:justify-start">
                                 <MailIcon className="w-5 h-5 mr-3 text-brand" />
                                 <span>info@tenders.ai</span>

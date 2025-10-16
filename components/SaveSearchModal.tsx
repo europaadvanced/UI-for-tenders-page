@@ -18,7 +18,7 @@ const SaveSearchModal: React.FC<SaveSearchModalProps> = ({ onSave, onClose }) =>
 
     return (
         <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex justify-center items-center p-4 animate-fade-in">
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-md">
+            <div className="rounded-lg shadow-xl w-full max-w-md ui-element-depth">
                 <div className="flex justify-between items-center p-5 border-b border-gray-200 dark:border-gray-700">
                     <h3 className="text-xl font-heading font-bold text-gray-800 dark:text-gray-100">Shrani iskanje</h3>
                     <button onClick={onClose} className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700" aria-label="Zapri modal">
@@ -35,7 +35,7 @@ const SaveSearchModal: React.FC<SaveSearchModalProps> = ({ onSave, onClose }) =>
                         value={name}
                         onChange={(e) => setName(e.target.value)}
                         placeholder="Npr. 'Nepovratna sredstva za digitalizacijo'"
-                        className="w-full h-[42px] text-base px-4 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded text-gray-900 dark:text-gray-100 focus:ring-brand focus:border-brand"
+                        className="w-full h-[42px] text-base px-4 rounded input-depth text-gray-900 dark:text-gray-100"
                         autoFocus
                     />
                      <p className="text-xs text-gray-500 dark:text-gray-400">
@@ -45,14 +45,14 @@ const SaveSearchModal: React.FC<SaveSearchModalProps> = ({ onSave, onClose }) =>
                 <div className="flex justify-end items-center p-5 bg-gray-50 dark:bg-gray-800/50 border-t border-gray-200 dark:border-gray-700 rounded-b-lg space-x-3">
                     <button
                         onClick={onClose}
-                        className="h-[42px] px-4 py-2 rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200 font-semibold transition-colors"
+                        className="h-[42px] px-4 py-2 rounded font-semibold transition-colors btn-secondary text-gray-700 dark:text-gray-200"
                     >
                         Prekliči
                     </button>
                     <button
                         onClick={handleSave}
                         disabled={!name.trim()}
-                        className="h-[42px] bg-brand text-white font-bold text-base px-6 py-2 rounded hover:bg-brand-dark transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="h-[42px] text-white font-bold text-base px-6 py-2 rounded flex items-center justify-center gap-2 btn-primary"
                     >
                         <SaveIcon className="w-5 h-5" />
                         <span>Shrani</span>

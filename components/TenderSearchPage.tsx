@@ -1,6 +1,5 @@
-
 import React, { useState, useMemo, useCallback } from 'react';
-import { Tender, FilterState, SummaryData, SortKey, SortDirection, SavedSearch } from '../types';
+import { Tender, FilterState, SummaryData, SortKey, SortDirection, SavedSearch, SavedTender } from '../types';
 import FilterBar from './FilterBar';
 import SummaryBar from './SummaryBar';
 import TenderList from './TenderList';
@@ -12,8 +11,11 @@ import { ChevronUpIcon, ChevronDownIcon } from './Icons';
 
 interface TenderSearchPageProps {
     allTenders: Tender[];
-    savedTenderIds: number[];
+    savedTenders: SavedTender[];
+    uninterestingTenderIds: number[];
     onSaveTender: (id: number) => void;
+    onMarkUninteresting: (id: number) => void;
+    onUpdateNickname: (id: number, nickname: string) => void;
     savedSearches: SavedSearch[];
     setSavedSearches: React.Dispatch<React.SetStateAction<SavedSearch[]>>;
     pageState: any; 
@@ -22,8 +24,11 @@ interface TenderSearchPageProps {
 
 const TenderSearchPage: React.FC<TenderSearchPageProps> = ({
     allTenders,
-    savedTenderIds,
+    savedTenders,
+    uninterestingTenderIds,
     onSaveTender,
+    onMarkUninteresting,
+    onUpdateNickname,
     savedSearches,
     setSavedSearches,
     pageState,
@@ -33,6 +38,8 @@ const TenderSearchPage: React.FC<TenderSearchPageProps> = ({
     const [isSaveSearchModalVisible, setIsSaveSearchModalVisible] = useState<boolean>(false);
     
     const { selectedTenderId, filters, activeFilters, sortConfig, currentPage, itemsPerPage } = pageState;
+
+    const savedTenderIds = useMemo(() => savedTenders.map(t => t.id), [savedTenders]);
 
     const setFilters = (newFilters: Partial<FilterState>) => setPageState(p => ({...p, filters: {...p.filters, ...newFilters}}));
     const setActiveFilters = (newFilters: FilterState) => setPageState(p => ({...p, activeFilters: newFilters}));
@@ -45,7 +52,7 @@ const TenderSearchPage: React.FC<TenderSearchPageProps> = ({
     const handleSearch = useCallback(() => {
         setActiveFilters(filters);
         setCurrentPage(1);
-    }, [filters]);
+    }, [filters, setActiveFilters, setCurrentPage]);
 
     const handleSortChange = (key: SortKey, direction: SortDirection) => {
         setSortConfig({ key, direction });
@@ -58,8 +65,8 @@ const TenderSearchPage: React.FC<TenderSearchPageProps> = ({
         const newSearch: SavedSearch = {
           id: Date.now().toString(),
           name,
-          filters: activeFilters, // Save the filters that are actually applied
-          notificationSettings: { enabled: false, frequency: 'weekly', includeTips: true },
+          filters: activeFilters,
+          notificationSettings: { enabled: false, frequency: 'weekly', includeTips: true, email: '' },
         };
         setSavedSearches(prev => [...prev, newSearch]);
         handleCloseSaveSearchModal();
@@ -67,6 +74,7 @@ const TenderSearchPage: React.FC<TenderSearchPageProps> = ({
     
     const processedTenders = useMemo(() => {
         const filtered = allTenders.filter(tender => {
+            if (!activeFilters.showUninteresting && uninterestingTenderIds.includes(tender.id)) return false;
             if (activeFilters.keyword && !tender.title.toLowerCase().includes(activeFilters.keyword.toLowerCase()) && !tender.summary.toLowerCase().includes(activeFilters.keyword.toLowerCase())) return false;
             if (activeFilters.fundingType !== 'all' && tender.fundingType !== activeFilters.fundingType) return false;
             if (activeFilters.category !== 'all' && tender.category !== activeFilters.category) return false;
@@ -85,7 +93,7 @@ const TenderSearchPage: React.FC<TenderSearchPageProps> = ({
             if (aValue > bValue) return direction === 'asc' ? 1 : -1;
             return 0;
         });
-    }, [allTenders, activeFilters, sortConfig]);
+    }, [allTenders, activeFilters, sortConfig, uninterestingTenderIds]);
 
     const paginatedTenders = useMemo(() => {
         const startIndex = (currentPage - 1) * itemsPerPage;
@@ -113,10 +121,10 @@ const TenderSearchPage: React.FC<TenderSearchPageProps> = ({
 
     return (
         <>
-            <div className="bg-white dark:bg-gray-800 rounded-md shadow border border-gray-200 dark:border-gray-700 transition-all duration-500">
+            <div className="ui-element-depth rounded-xl transition-all duration-500 overflow-hidden">
                 <div className="flex justify-between items-center px-4 sm:px-6 py-3">
-                    <h2 className="text-xl md:text-2xl font-heading font-bold text-gray-800 dark:text-gray-100">Iskanje razpisov</h2>
-                    <button onClick={() => setIsFilterUIVisible(!isFilterUIVisible)} className="flex p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700 items-center gap-2 text-sm font-semibold text-gray-600 dark:text-gray-300">
+                    <h2 className="text-xl md:text-2xl font-semibold text-slate-900 dark:text-slate-100">Iskanje razpisov</h2>
+                    <button onClick={() => setIsFilterUIVisible(!isFilterUIVisible)} className="flex p-2 rounded-md hover:bg-slate-100 dark:hover:bg-slate-700/50 items-center gap-2 text-sm font-semibold text-slate-600 dark:text-slate-300">
                         {isFilterUIVisible ? 'Skrij filtre' : 'Pokaži filtre'}
                         {isFilterUIVisible ? <ChevronUpIcon/> : <ChevronDownIcon/>}
                     </button>
@@ -133,13 +141,13 @@ const TenderSearchPage: React.FC<TenderSearchPageProps> = ({
                             onSaveSearchClick={handleOpenSaveSearchModal}
                         />
                     </div>
-                    <div className="border-t border-gray-200 dark:border-gray-700 p-4 sm:p-6">
-                        <h3 className="text-lg font-heading font-semibold text-gray-700 dark:text-gray-300 mb-3">Povzetek rezultatov</h3>
+                    <div className="border-t border-slate-200 dark:border-slate-700 p-4 sm:p-6">
+                        <h3 className="text-base font-semibold text-slate-800 dark:text-slate-200 mb-3">Povzetek rezultatov</h3>
                         <SummaryBar data={summaryData} />
                     </div>
                 </div>
                 {processedTenders.length > 0 && (
-                    <div className="border-t border-gray-200 dark:border-gray-700 p-4">
+                    <div className="border-t border-slate-200 dark:border-slate-700 p-4">
                         <SortBar sortConfig={sortConfig} onSortChange={handleSortChange} />
                     </div>
                 )}
@@ -148,14 +156,31 @@ const TenderSearchPage: React.FC<TenderSearchPageProps> = ({
             <div className="mt-8">
                 <div className="lg:flex lg:gap-8">
                     <div className={`w-full transition-all duration-300 ${selectedTender ? 'hidden lg:block lg:w-1/3' : 'lg:w-full'}`}>
-                        <TenderList tenders={paginatedTenders} onSelectTender={setSelectedTenderId} selectedTenderId={selectedTenderId} onSaveTender={onSaveTender} savedTenderIds={savedTenderIds}/>
+                        <TenderList 
+                            tenders={paginatedTenders} 
+                            onSelectTender={setSelectedTenderId} 
+                            selectedTenderId={selectedTenderId} 
+                            onSaveTender={onSaveTender} 
+                            savedTenderIds={savedTenderIds}
+                            onMarkUninteresting={onMarkUninteresting}
+                            uninterestingTenderIds={uninterestingTenderIds}
+                        />
                         {processedTenders.length > 0 && (
                             <PaginationControls currentPage={currentPage} totalPages={totalPages} onPageChange={setCurrentPage} itemsPerPage={itemsPerPage} onItemsPerPageChange={setItemsPerPage} />
                         )}
                     </div>
                     <div className={`w-full lg:sticky lg:top-8 transition-all duration-300 lg:max-h-[calc(100vh-4rem)] ${selectedTender ? 'lg:w-2/3' : 'lg:w-0'}`}>
                         {selectedTender && (
-                            <TenderDetail tender={selectedTender} onClose={() => setSelectedTenderId(null)} onSave={onSaveTender} isSaved={savedTenderIds.includes(selectedTender.id)} />
+                            <TenderDetail
+                                tender={selectedTender}
+                                onClose={() => setSelectedTenderId(null)}
+                                onSave={onSaveTender}
+                                isSaved={savedTenderIds.includes(selectedTender.id)}
+                                onMarkUninteresting={onMarkUninteresting}
+                                isUninteresting={uninterestingTenderIds.includes(selectedTender.id)}
+                                savedTenders={savedTenders}
+                                onUpdateNickname={onUpdateNickname}
+                            />
                         )}
                     </div>
                 </div>
